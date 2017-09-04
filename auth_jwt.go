@@ -39,7 +39,7 @@ type JWTMiddleware struct {
 
 	// Callback function that should perform the authentication of the user based on userId and
 	// password. Must return true on success, false on failure. Required.
-	Authenticator func(userId string, password string) bool
+	Authenticator func(userId string, password string) (map[string]interface{}, bool)
 
 	// Callback function that should perform the authorization of the authenticated user. Called
 	// only after an authentication success. Must return true on success, false on failure.
@@ -125,11 +125,8 @@ type resultToken struct {
 }
 
 type loginToken struct {
-	Token string `json:"token"`
-	Un    string `json:"un"`
-	Fn    string `json:"fn"`
-	Ln    string `json:"ln"`
-	Id    string `json:"id"`
+	Token      string `json:"token"`
+	Additional map[string]interface{}
 }
 
 type login struct {
@@ -149,7 +146,9 @@ func (mw *JWTMiddleware) LoginHandler(writer rest.ResponseWriter, request *rest.
 		return
 	}
 
-	if !mw.Authenticator(loginVals.Username, loginVals.Password) {
+	res, err := mw.Authenticator(loginVals.Username, loginVals.Password)
+
+	if err != nil {
 		mw.unauthorized(writer)
 		return
 	}
@@ -174,7 +173,7 @@ func (mw *JWTMiddleware) LoginHandler(writer rest.ResponseWriter, request *rest.
 		return
 	}
 
-	writer.WriteJson(loginToken{Token: tokenString})
+	writer.WriteJson(loginToken{Token: tokenString, Additional: res})
 }
 
 func (mw *JWTMiddleware) parseToken(request *rest.Request) (*jwt.Token, error) {
