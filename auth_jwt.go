@@ -146,9 +146,9 @@ func (mw *JWTMiddleware) LoginHandler(writer rest.ResponseWriter, request *rest.
 		return
 	}
 
-	res, err := mw.Authenticator(loginVals.Username, loginVals.Password)
+	res, authd := mw.Authenticator(loginVals.Username, loginVals.Password)
 
-	if err != nil {
+	if !authd {
 		mw.unauthorized(writer)
 		return
 	}
