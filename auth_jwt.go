@@ -124,6 +124,14 @@ type resultToken struct {
 	Token string `json:"token"`
 }
 
+type loginToken struct {
+	Token string `json:"token"`
+	Un    string `json:"un"`
+	Fn    string `json:"fn"`
+	Ln    string `json:"ln"`
+	Id    string `json:"id"`
+}
+
 type login struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -166,7 +174,7 @@ func (mw *JWTMiddleware) LoginHandler(writer rest.ResponseWriter, request *rest.
 		return
 	}
 
-	writer.WriteJson(resultToken{Token: tokenString, "Test": 123})
+	writer.WriteJson(loginToken{Token: tokenString, Ln: "Test", Fn: "Test"})
 }
 
 func (mw *JWTMiddleware) parseToken(request *rest.Request) (*jwt.Token, error) {
