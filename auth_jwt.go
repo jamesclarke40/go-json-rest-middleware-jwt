@@ -166,7 +166,7 @@ func (mw *JWTMiddleware) LoginHandler(writer rest.ResponseWriter, request *rest.
 		return
 	}
 
-	writer.WriteJson(resultToken{Token: tokenString})
+	writer.WriteJson(resultToken{Token: tokenString, "Test": 123})
 }
 
 func (mw *JWTMiddleware) parseToken(request *rest.Request) (*jwt.Token, error) {
